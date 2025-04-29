@@ -1,0 +1,485 @@
+definitions:
+  database.Event:
+    properties:
+      date:
+        type: string
+      description:
+        minLength: 10
+        type: string
+      id:
+        type: string
+      location:
+        type: string
+      name:
+        minLength: 3
+        type: string
+      ownerId:
+        type: string
+    required:
+    - date
+    - description
+    - name
+    - ownerId
+    type: object
+  database.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  main.LoginUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  main.LoginUserResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  main.RegisterUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        minLength: 2
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+info:
+  contact: {}
+  description: This is a simple REST API for managing events
+  title: Event REST API
+  version: "1.0"
+paths:
+  /api/v1/attendees/{id}/events:
+    get:
+      consumes:
+      - application/json
+      description: Get events that a user is attending
+      parameters:
+      - description: Attendee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Event'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get events by attendee
+      tags:
+      - attendees
+  /api/v1/events:
+    get:
+      consumes:
+      - application/json
+      description: Returns all events
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Event'
+            type: array
+      summary: Returns all events
+      tags:
+      - events
+    post:
+      consumes:
+      - application/json
+      description: Create a new event
+      parameters:
+      - description: Event to create
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/database.Event'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.Event'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new event
+      tags:
+      - events
+  /api/v1/events/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an event by its ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete an event
+      tags:
+      - events
+    get:
+      consumes:
+      - application/json
+      description: Get a single event by its ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Event'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get event by ID
+      tags:
+      - events
+    put:
+      consumes:
+      - application/json
+      description: Update an event by its ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/database.Event'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Event'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an event
+      tags:
+      - events
+  /api/v1/events/{id}/attendees:
+    get:
+      consumes:
+      - application/json
+      description: Get list of users attending an event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get attendees for event
+      tags:
+      - attendees
+  /api/v1/events/{id}/attendees/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a user from attendees of an event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User ID to remove
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Remove attendee from event
+      tags:
+      - attendees
+    post:
+      consumes:
+      - application/json
+      description: Add a user as attendee to an event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User ID to add as attendee
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add attendee to event
+      tags:
+      - attendees
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password, returns a JWT token
+      parameters:
+      - description: User login payload
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/main.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully authenticated
+          schema:
+            $ref: '#/definitions/main.LoginUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login user
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account with email, password and name
+      parameters:
+      - description: User registration payload
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/main.RegisterUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully registered
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register a new user
+      tags:
+      - Auth
+securityDefinitions:
+  BearerAuth:
+    description: Enter your Bearer token in the format **Bearer &lt;token&gt;**
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

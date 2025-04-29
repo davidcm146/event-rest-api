@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS events (
     owner_id UUID NOT NULL,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
-    date TIMESTAMP NOT NULL,
+    date DATE NOT NULL,
     location TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
