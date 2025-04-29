@@ -1,25 +1,40 @@
+# Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
 *.test
+
+# Output of the go coverage tool
 *.out
 
-/vendor/
-/bin/
-/build/
+# Dependency directories (vendor/)
+vendor/
 
-*.log
-*.tmp
-*.swp
-*.swo
-*.DS_Store
-.idea/
-.vscode/
-*.code-workspace
-
-go.sum
-
+# Go workspace file (optional)
 go.work
 go.work.sum
+
+# Swag generated docs
+docs/
+swagger.json
+swagger.yaml
+
+# IDE/editor config
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Air temporary files
+tmp/
+tmp.*
+
+# Logs
+*.log
+
+# dotenv
+.env

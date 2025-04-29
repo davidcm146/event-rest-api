@@ -24,7 +24,7 @@ type application struct {
 }
 
 func main() {
-	db, err := sql.Open("postgres", "postgres://postgres:10042003@localhost:5432/events_api?sslmode=disable")
+	db, err := sql.Open("postgres", env.GetEnvString("DATABASE_URL", "postgres://user:password@localhost:5432/dbname"))
 	if err != nil {
 		log.Fatal(err)
 	}
